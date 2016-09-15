@@ -7,6 +7,7 @@ DOTVIMPATH:=$(INSTALL_DIR)/.vim
 
 # not the vars you are looking for
 #
+.PHONY: install backup update clean restore .rc-files .dot-vim .update-config .update-plugins .fonts .rc-backup .vim-backup .rc-clean .vim-clean .rc-restore .vim-restore
 .DEFAULT_GOAL:=install
 PLUGIN_DIR:=$(SOURCE_DIR)/vim/bundle
 PLUGIN_SRC:=$(SOURCE_DIR)/
@@ -14,21 +15,21 @@ PLUGIN_SRC:=$(SOURCE_DIR)/
 
 # GOALS #########################################
 #
-install: .update_plugins rc-files dot-vim
+install: .update-plugins .fonts .rc-files .dot-vim
 backup: .rc-files-backup .vim-files-backup
-update: .update-config .update_plugins
+update: .update-config .update-plugins
 clean: .rc-clean .vim-clean
 restore: .rc-restore .vim-restore
 
 
 # create ########################################
 #
-rc-files: .rc-backup
-	[ -f $(VIMRCPATH) ] && mv $(VIMRCPATH) $(VIMRCPATH)\.baklava
-	ln -si $(SOURCE_DIR)/vimrc $(INSTALL_DIR)/.vimrc
+.rc-files: .rc-backup
+	ln -sbi $(SOURCE_DIR)/vimrc $(INSTALL_DIR)/.vimrc
 
-dot-vim: .vim-backup
-	ln -si $(SOURCE_DIR)/vim/ $(INSTALL_DIR)/.vim
+.dot-vim: .vim-backup
+	mkdir -p $(INSTALL_DIR)/.vim/
+	ln -sbi $(SOURCE_DIR)/vim/* $(INSTALL_DIR)/.vim/
 
 
 # update ########################################
@@ -36,26 +37,29 @@ dot-vim: .vim-backup
 .update-config:
 	git rebase master
 
-.update_plugins:
+.update-plugins:
 	git submodule update --init --recursive
+
+.fonts:
+	./deps/powerline-fonts/install.sh
 
 
 # back-up #######################################
 #
 .rc-backup: .rc-clean
-	[ -f $(VIMRCPATH) ] && mv $(VIMRCPATH) $(VIMRCPATH)\.baklava
+	$(shell [ -f $(VIMRCPATH) ] && mv $(VIMRCPATH) $(VIMRCPATH)\.baklava)
 
 .vim-backup: .vim-clean
-	[ -f $(DOTVIMPATH) ] && mv $(DOTVIMPATH) $(DOTVIMPATH)\.baklava
+	$(shell [ -f $(DOTVIMPATH) ] && mv $(DOTVIMPATH) $(DOTVIMPATH)\.baklava)
 
 
 # delete ########################################
 #
 .rc-clean:
-	[ -L $(VIMRCPATH) ] && rm $(VIMRCPATH)
+	$(shell [ -L $(VIMRCPATH) ] && rm $(VIMRCPATH))
 
 .vim-clean:
-	[ -L $(DOTVIMPATH) ] && rm $(DOTVIMPATH)
+	$(shell [ -L $(DOTVIMPATH) ] && rm $(DOTVIMPATH))
 
 
 # restore #######################################
