@@ -13,5 +13,8 @@ if filereadable(expand("~/.vimrc_background")) " requires base16-bash to be inst
 endif
 
 " NERDTree
-  map <leader>n :NERDTreeToggle<CR>
-  let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+map <leader>n :NERDTreeToggle<CR>
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+
+" vim-airline
+let g:airline_powerline_fonts = 1
