@@ -7,7 +7,7 @@ DOTVIMPATH:=$(INSTALL_DIR)/.vim
 
 # not the vars you are looking for
 #
-.PHONY: install backup update clean restore .rc-files .dot-vim .update-config .update-plugins .fonts .rc-backup .vim-backup .rc-clean .vim-clean .rc-restore .vim-restore
+.PHONY: install backup update clean restore .update-config .update-plugins .rc-backup .vim-backup .rc-clean .vim-clean .rc-restore .vim-restore
 .DEFAULT_GOAL:=install
 PLUGIN_DIR:=$(SOURCE_DIR)/vim/bundle
 PLUGIN_SRC:=$(SOURCE_DIR)/
@@ -15,60 +15,64 @@ PLUGIN_SRC:=$(SOURCE_DIR)/
 
 # GOALS #########################################
 #
-install: .update-plugins .fonts .rc-files .dot-vim
+install: .update-plugins .deps/powerline-fonts/* $(INSTALL_DIR)/.vim $(INSTALL_DIR)/.vimrc
 backup: .rc-files-backup .vim-files-backup
 update: .update-config .update-plugins
 clean: .rc-clean .vim-clean
 restore: .rc-restore .vim-restore
+.rc-files: .rc-backup $(INSTALL_DIR)/.vimrc
+.dot-vim: .vim-backup $(INSTALL_DIR)/.vim
 
 
 # create ########################################
 #
-.rc-files: .rc-backup
-	ln -sbi $(SOURCE_DIR)/vimrc $(INSTALL_DIR)/.vimrc
+$(INSTALL_DIR)/.vim:
+	mkdir -p "$(INSTALL_DIR)/.vim/"
 
-.dot-vim: .vim-backup
-	mkdir -p $(INSTALL_DIR)/.vim/
-	ln -sbi $(SOURCE_DIR)/vim/* $(INSTALL_DIR)/.vim/
+$(INSTALL_DIR)/.vimrc:
+	ln -sbi "$(SOURCE_DIR)/vimrc" "$(INSTALL_DIR)/.vimrc"
+
+$(INSTALL_DIR)/.vim/bundle:
+	ln -sbi "$(SOURCE_DIR)/vim/*" "$(INSTALL_DIR)/.vim/"
 
 
 # update ########################################
 #
 .update-config:
-	git rebase master
+	git rebase origin/master
 
 .update-plugins:
 	git submodule update --init --recursive
 
-.fonts:
+deps/powerline-fonts/*:
 	./deps/powerline-fonts/install.sh
 
 
 # back-up #######################################
 #
 .rc-backup: .rc-clean
-	$(shell [ -f $(VIMRCPATH) ] && mv $(VIMRCPATH) $(VIMRCPATH)\.baklava)
+	$(shell [ -f "$(VIMRCPATH)" ] && mv "$(VIMRCPATH)" "$(VIMRCPATH)\.baklava")
 
 .vim-backup: .vim-clean
-	$(shell [ -f $(DOTVIMPATH) ] && mv $(DOTVIMPATH) $(DOTVIMPATH)\.baklava)
+	$(shell [ -f "$(DOTVIMPATH)" ] && mv "$(DOTVIMPATH)" "$(DOTVIMPATH)\.baklava")
 
 
 # delete ########################################
 #
 .rc-clean:
-	$(shell [ -L $(VIMRCPATH) ] && rm $(VIMRCPATH))
+	$(shell [ -L "$(VIMRCPATH)" ] && rm "$(VIMRCPATH)")
 
 .vim-clean:
-	$(shell [ -L $(DOTVIMPATH) ] && rm $(DOTVIMPATH))
+	$(shell [ -L "$(DOTVIMPATH)" ] && rm "$(DOTVIMPATH)")
 
 
 # restore #######################################
 #
 .rc-restore: .rc-clean
-	[ -f $(VIMRCPATH)\.baklava ] && mv $(VIMRCPATH)\.baklava) $(VIMRCPATH)
+	[ -f "$(VIMRCPATH)\.baklava" ] && mv "$(VIMRCPATH)\.baklava" "$(VIMRCPATH)"
 
 .vim-restore: .vim-clean
-	[ -f $(DOTVIMPATH)\.baklava ] && mv $(DOTVIMPATH)\.baklava) $(DOTVIMPATH)
+	[ -f "$(DOTVIMPATH)\.baklava" ] && mv "$(DOTVIMPATH)\.baklava" "$(DOTVIMPATH)"
 
 
 help:
