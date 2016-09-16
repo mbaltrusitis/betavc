@@ -15,7 +15,7 @@ PLUGIN_SRC:=$(SOURCE_DIR)/
 
 # GOALS #########################################
 #
-install: .update-plugins .deps/powerline-fonts/* $(INSTALL_DIR)/.vim $(INSTALL_DIR)/.vimrc
+install: .update-plugins deps/powerline-fonts/* $(INSTALL_DIR)/.vim/bundle $(INSTALL_DIR)/.vimrc
 backup: .rc-files-backup .vim-files-backup
 update: .update-config .update-plugins
 clean: .rc-clean .vim-clean
@@ -30,11 +30,10 @@ $(INSTALL_DIR)/.vim:
 	mkdir -p "$(INSTALL_DIR)/.vim/"
 
 $(INSTALL_DIR)/.vimrc:
-	ln -sbi "$(SOURCE_DIR)/vimrc" "$(INSTALL_DIR)/.vimrc"
+	ln -si "$(SOURCE_DIR)/vimrc" "$(INSTALL_DIR)/.vimrc"
 
-$(INSTALL_DIR)/.vim/bundle:
-	ln -sbi "$(SOURCE_DIR)/vim/*" "$(INSTALL_DIR)/.vim/"
-
+$(INSTALL_DIR)/.vim/bundle: $(INSTALL_DIR)/.vim
+	ln -si "$(SOURCE_DIR)/vim/bundle" "$(INSTALL_DIR)/.vim/"
 
 # update ########################################
 #
@@ -69,10 +68,10 @@ deps/powerline-fonts/*:
 # restore #######################################
 #
 .rc-restore: .rc-clean
-	[ -f "$(VIMRCPATH)\.baklava" ] && mv "$(VIMRCPATH)\.baklava" "$(VIMRCPATH)"
+	$(shell [ -f "$(VIMRCPATH)\.baklava" ] && mv "$(VIMRCPATH)\.baklava" "$(VIMRCPATH)")
 
 .vim-restore: .vim-clean
-	[ -f "$(DOTVIMPATH)\.baklava" ] && mv "$(DOTVIMPATH)\.baklava" "$(DOTVIMPATH)"
+	$(shell [ -f "$(DOTVIMPATH)\.baklava" ] && mv "$(DOTVIMPATH)\.baklava" "$(DOTVIMPATH)")
 
 
 help:
