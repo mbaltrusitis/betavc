@@ -8,9 +8,12 @@ filetype plugin indent on
 set hlsearch  " highlight all search patterns matches
 map <F2> :echo 'Current time is ' . strftime('%c')<CR>
 map <F4> :set paste! nopaste?<CR>
+map <F3> :noh<CR>
 noremap <leader>y "*y<CR>
 noremap <leader>p "*p<CR>
 set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab " tab options
+set smartcase
+set number  " line numbers
 
 " base16-bash/vim settings
 if filereadable(expand("~/.vimrc_background"))  " requires base16-bash to be installed
