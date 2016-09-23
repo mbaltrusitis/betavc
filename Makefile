@@ -121,7 +121,7 @@ help:
 	@echo " - install:     The default goal. Performs a backup (see below) and installs."
 	@echo " - backup:      Moves any existing .vim/ or .vimrc to \$$INSTALL_DIR with a baklava extension. Symlinks are simply removed."
 	@echo " - update:      Remote dotvimrc repo is rebased and submodules are updated."
-	@echo " - clean:       This will only ever remove conflicting symlinks in \$$INSTALL_DIR and will never actually remove any real state."
+	@echo " - unlink:      Remove conflicting symlinks in \$$INSTALL_DIR and will never actually remove any real state."
 	@echo " - restore:     Removes project symlinks and restores any backed-up config files."
 	@echo ""
 	@echo "ARGUMENTS"
