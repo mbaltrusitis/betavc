@@ -9,7 +9,7 @@ YOU_COMPLETE_ME_MF="Unix Makefiles"
 
 # not the vars you are looking for
 #
-.PHONY: install backup update clean restore .update-config .update-plugins .rc-backup .vim-backup .rc-unlink .vim-unlink .rc-restore .vim-restore ycm_install ycm-clean ycm_configure
+.PHONY: install backup update clean restore .update-config .update-plugins .rc-backup .vim-backup .rc-unlink .vim-unlink .rc-restore .vim-restore ycm-install ycm-clean ycm-configure
 .DEFAULT_GOAL:=install
 PLUGIN_DIR:=$(SOURCE_DIR)/vim/bundle
 PLUGIN_SRC:=$(SOURCE_DIR)/
@@ -17,13 +17,13 @@ PLUGIN_SRC:=$(SOURCE_DIR)/
 
 # GOALS #########################################
 #
-install: .update-plugins deps/powerline-fonts/* $(INSTALL_DIR)/.vim/bundle $(INSTALL_DIR)/.vimrc
+install: .update-plugins deps/powerline-fonts/* ycm-install $(INSTALL_DIR)/.vim/bundle $(INSTALL_DIR)/.vimrc
 backup: .rc-files-backup .vim-files-backup
 update: .update-config .update-plugins
 unlink: .vim-unlink .rc-unlink
 clean: ycm-clean
 restore: .rc-restore .vim-restore
-ycm_clean_install: ycm_install ycm-clean
+ycm-clean-install: ycm-install ycm-clean
 .rc-files: .rc-backup $(INSTALL_DIR)/.vimrc
 .dot-vim: .vim-backup $(INSTALL_DIR)/.vim
 
@@ -31,49 +31,49 @@ ycm_clean_install: ycm_install ycm-clean
 # create ########################################
 #
 $(INSTALL_DIR)/.vim:
-	mkdir -p "$(INSTALL_DIR)/.vim/"
+	$(shell mkdir -p "$(INSTALL_DIR)/.vim/")
 
 $(INSTALL_DIR)/.vimrc:
-	ln -si "$(SOURCE_DIR)/vimrc" "$(INSTALL_DIR)/.vimrc"
+	$(shell ln -si "$(SOURCE_DIR)/vimrc" "$(INSTALL_DIR)/.vimrc")
 
 $(INSTALL_DIR)/.vim/bundle: $(INSTALL_DIR)/.vim
-	ln -si "$(SOURCE_DIR)/vim/bundle" "$(INSTALL_DIR)/.vim/"
+	$(shell ln -si "$(SOURCE_DIR)/vim/bundle" "$(INSTALL_DIR)/.vim/")
+
+
+# Airline #######################################
+#
+deps/powerline-fonts/*:
+	./deps/powerline-fonts/install.sh
 
 
 # YouCompleteMe #################################
 #
-$(INSTALL_DIR)/ycm_build:
-	mkdir -p "$(INSTALL_DIR)/ycm_build"
+/tmp/libclang.tar.xz:
+	$(shell curl -o "/tmp/libclang.tar.xz" "http://llvm.org/releases/${LIB_CLANG_VERSION}/clang+llvm-${LIB_CLANG_VERSION}-x86_64-apple-darwin.tar.xz")
 
-$(INSTALL_DIR)/ycm_temp:
-	mkdir -p "$(INSTALL_DIR)/ycm_temp"
+/tmp/libclang.tar: /tmp/libclang.tar.xz
+	$(shell gunzip -fd "/tmp/libclang.tar.xz")
 
-/tmp/libclang.tar:
-	$(shell curl -o "/tmp/libclang.tar.xz http://llvm.org/releases/${LIB_CLANG_VERSION}/clang+llvm-${LIB_CLANG_VERSION}-x86_64-apple-darwin.tar.xz" \
-		&& gunzip -d "/tmp/libclang.tar.xz")
+/tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin: /tmp/libclang.tar
+	$(shell tar -xop -f "/tmp/libclang.tar" -C "/tmp")
 
-$(INSTALL_DIR)/ycm_temp/llvm_root_dir: $(INSTALL_DIR)/ycm_temp /tmp/libclang.tar
-	tar -xopf /tmp/libclang.tar -C /tmp
-	mv /tmp/clang* ~/ycm_temp/llvm_root_dir
+deps/ycm/ycm-temp/llvm_root_dir: /tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin
+	$(shell mv -f "/tmp/clang+*" "deps/ycm/ycm-temp/llvm_root_dir")
 
-ycm_configure: $(INSTALL_DIR)/ycm_temp/llvm_root_dir $(INSTALL_DIR)/ycm_build
-	$(shell cd "${INSTALL_DIR}/ycm_build" \
-	    && cmake -G ${YOU_COMPLETE_ME_MF} -DPATH_TO_LLVM_ROOT="${INSTALL_DIR}/ycm_temp/llvm_root_dir" . "${INSTALL_DIR}/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp")
+ycm-configure: deps/ycm/ycm-temp/llvm_root_dir
+	$(shell cmake -G ${YOU_COMPLETE_ME_MF} -D"PATH_TO_LLVM_ROOT=deps/ycm/ycm-temp/llvm_root_dir" -B"deps/ycm/ycm-build/" -H"vim/bundle/YouCompleteMe/third_party/ycmd/cpp")
 
-ycm_install: ycm_configure
-	$(shell cd ${INSTALL_DIR}/ycm_build && cmake --build . --target ycm_core --config Release)
+ycm-install: ycm-configure
+	$(shell cmake --build "deps/ycm/ycm-build/" --target ycm_core --config Release)
 
 
 # update ########################################
 #
 .update-config:
-	git rebase origin/master
+	$(shell git rebase origin/master)
 
 .update-plugins:
-	git submodule update --init --recursive
-
-deps/powerline-fonts/*:
-	./deps/powerline-fonts/install.sh
+	$(shell git submodule update --init --recursive)
 
 
 # back-up #######################################
@@ -88,9 +88,9 @@ deps/powerline-fonts/*:
 # clean #########################################
 #
 ycm-clean:
-	rm -fr $(INSTALL_DIR)/ycm_temp
+	rm -fr deps/ycm/ycm-temp/*
 	rm -fr /tmp/clang*
-	rm -fr $(INSTALL_DIR)/ycm_build
+	rm -fr deps/ycm/ycm-build/*
 
 
 # unlink ########################################
