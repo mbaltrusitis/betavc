@@ -43,9 +43,11 @@
 [submodule "vim/bundle/vcscommand.vim"]
 	path = vim/bundle/vcscommand.vim
 	url = https://github.com/vim-scripts/vcscommand.vim.git
+        ignore = dirty
 [submodule "vim/bundle/vim-lawrencium"]
 	path = vim/bundle/vim-lawrencium
 	url = https://github.com/ludovicchabant/vim-lawrencium.git
+        ignore= dirty
 [submodule "vim/bundle/YouCompleteMe"]
 	path = vim/bundle/YouCompleteMe
 	url = https://github.com/Valloric/YouCompleteMe.git
