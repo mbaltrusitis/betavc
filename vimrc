@@ -12,8 +12,12 @@ map <F3> :noh<CR>
 noremap <leader>y "*y<CR>
 noremap <leader>p "*p<CR>
 set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab " tab options
-set smartcase
 set number  " line numbers
+
+" setup a more modern search behavior
+set ignorecase
+set smartcase
+set incsearch
 
 " base16-bash/vim settings
 if filereadable(expand("~/.vimrc_background"))  " requires base16-bash to be installed
