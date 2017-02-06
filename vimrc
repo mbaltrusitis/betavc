@@ -7,6 +7,7 @@ syntax on
 filetype plugin indent on
 set hlsearch  " highlight all search patterns matches
 map <F2> :echo 'Current time is ' . strftime('%c')<CR>
+" some copy and paste sanity
 map <F4> :set paste! nopaste?<CR>
 map <F3> :noh<CR>
 noremap <leader>y "*y<CR>

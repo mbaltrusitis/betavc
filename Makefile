@@ -9,7 +9,7 @@ YOU_COMPLETE_ME_MF="Unix Makefiles"
 
 # not the vars you are looking for
 #
-.PHONY: install backup update clean restore .update-config .update-plugins .rc-backup .vim-backup .rc-unlink .vim-unlink .rc-restore .vim-restore ycm-install ycm-clean ycm-configure
+.PHONY: install backup update clean restore .update-config .update-plugins .rc-backup .vim-backup .rc-unlink .vim-unlink .rc-restore .vim-restore ycm-install ycm-clean ycm-configure .ycm-install
 .DEFAULT_GOAL:=install
 PLUGIN_DIR:=$(SOURCE_DIR)/vim/bundle
 PLUGIN_SRC:=$(SOURCE_DIR)/
@@ -17,11 +17,11 @@ PLUGIN_SRC:=$(SOURCE_DIR)/
 
 # GOALS #########################################
 #
-install: .update-plugins deps/powerline-fonts/* ycm-install $(INSTALL_DIR)/.vim/bundle $(INSTALL_DIR)/.vimrc
+install: .update-plugins deps/powerline-fonts/* $(INSTALL_DIR)/.vim/bundle $(INSTALL_DIR)/.vimrc .ycm-install
 backup: .rc-files-backup .vim-files-backup
 update: .update-config .update-plugins
 unlink: .vim-unlink .rc-unlink
-clean: ycm-clean
+#clean: ycm-clean
 restore: .rc-restore .vim-restore
 ycm-clean-install: ycm-install ycm-clean
 .rc-files: .rc-backup $(INSTALL_DIR)/.vimrc
@@ -43,28 +43,32 @@ $(INSTALL_DIR)/.vim/bundle: $(INSTALL_DIR)/.vim
 # Airline #######################################
 #
 deps/powerline-fonts/*:
-	./deps/powerline-fonts/install.sh
+	$(shell ./deps/powerline-fonts/install.sh)
 
 
 # YouCompleteMe #################################
 #
-/tmp/libclang.tar.xz:
-	$(shell curl -o "/tmp/libclang.tar.xz" "http://llvm.org/releases/${LIB_CLANG_VERSION}/clang+llvm-${LIB_CLANG_VERSION}-x86_64-apple-darwin.tar.xz")
 
-/tmp/libclang.tar: /tmp/libclang.tar.xz
-	$(shell gunzip -fd "/tmp/libclang.tar.xz")
+.ycm-install:
+	$(shell %(SOURCE_DIR)/vim/bundle/YouCompleteMe/install.py)
 
-/tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin: /tmp/libclang.tar
-	$(shell tar -xop -f "/tmp/libclang.tar" -C "/tmp")
-
-deps/ycm/ycm-temp/llvm_root_dir: /tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin
-	$(shell mv -f "/tmp/clang+*" "deps/ycm/ycm-temp/llvm_root_dir")
-
-ycm-configure: deps/ycm/ycm-temp/llvm_root_dir
-	$(shell cmake -G ${YOU_COMPLETE_ME_MF} -D"PATH_TO_LLVM_ROOT=deps/ycm/ycm-temp/llvm_root_dir" -B"deps/ycm/ycm-build/" -H"vim/bundle/YouCompleteMe/third_party/ycmd/cpp")
-
-ycm-install: ycm-configure
-	$(shell cmake --build "deps/ycm/ycm-build/" --target ycm_core --config Release)
+#/tmp/libclang.tar.xz:
+#	$(shell curl -o "/tmp/libclang.tar.xz" "http://llvm.org/releases/${LIB_CLANG_VERSION}/clang+llvm-${LIB_CLANG_VERSION}-x86_64-apple-darwin.tar.xz")
+#
+#/tmp/libclang.tar: /tmp/libclang.tar.xz
+#	$(shell gunzip -fd "/tmp/libclang.tar.xz")
+#
+#/tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin: /tmp/libclang.tar
+#	$(shell tar -xop -f "/tmp/libclang.tar" -C "/tmp")
+#
+#deps/ycm/ycm-temp/llvm_root_dir: /tmp/clang+llvm-$(LIB_CLANG_VERSION)-x86_64-apple-darwin
+#	$(shell mv -f "/tmp/clang+*" "deps/ycm/ycm-temp/llvm_root_dir")
+#
+#ycm-configure: deps/ycm/ycm-temp/llvm_root_dir
+#	$(shell cmake -G ${YOU_COMPLETE_ME_MF} -D"PATH_TO_LLVM_ROOT=deps/ycm/ycm-temp/llvm_root_dir" -B"deps/ycm/ycm-build/" -H"vim/bundle/YouCompleteMe/third_party/ycmd/cpp")
+#
+#ycm-install: ycm-configure
+#	$(shell cmake --build "deps/ycm/ycm-build/" --target ycm_core --config Release)
 
 
 # update ########################################
