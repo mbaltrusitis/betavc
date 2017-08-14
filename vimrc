@@ -8,14 +8,25 @@ filetype plugin indent on
 set hlsearch  " highlight all search patterns matches
 map <F2> :echo 'Current time is ' . strftime('%c')<CR>
 " some copy and paste sanity
-map <F4> :set paste! nopaste?<CR>
+"set clipboard^=unnamed           " Use system clipboard
+"if $TMUX == ''
+    "set clipboard^=unnamed
+"endif
+
+" webpack config
+set backupcopy=yes
+
+"function key assignments
 map <F3> :noh<CR>
+map <F4> :set paste! nopaste?<CR>
+map <F5> :setlocal spell spelllang=en_us<CR>
+
 noremap <leader>y "*y<CR>
 noremap <leader>p "*p<CR>
 set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab " tab options
 set number  " line numbers
 
-" setup a more modern search behavior
+" more modern search behavior
 set ignorecase
 set smartcase
 set incsearch
@@ -28,7 +39,7 @@ endif
 
 " NERDTree
 map <leader>n :NERDTreeToggle<CR>
-let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$', '\.swp']
 
 " vim-airline
 let g:airline_powerline_fonts = 1
