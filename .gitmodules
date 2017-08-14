@@ -58,3 +58,6 @@
 [submodule "vim/bundle/dash.vim"]
 	path = vim/bundle/dash.vim
 	url = https://github.com/rizzatti/dash.vim.git
+[submodule "vim/bundle/vim-mypy"]
+	path = vim/bundle/vim-mypy
+	url = https://github.com/integralist/vim-mypy
